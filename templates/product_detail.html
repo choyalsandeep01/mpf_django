@@ -1,0 +1,1161 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ product.name }} - {{ company_info.company_name }}{% endblock %}
+
+
+<meta name="description" content="{{ product.meta_description|default:product.short_description }}">
+<meta name="keywords" content="{{ product.material }}, stainless steel, {{ product.category.name }}, industrial">
+<meta property="og:title" content="{{ product.name }}">
+<meta property="og:description" content="{{ product.short_description }}">
+<meta property="og:image" content="{{ product.image.url }}">
+<meta property="og:type" content="product">
+
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #1a365d;
+        --secondary-color: #2d5a87;
+        --accent-color: #3182ce;
+        --success-color: #38a169;
+        --warning-color: #d69e2e;
+        --error-color: #e53e3e;
+        --text-dark: #2d3748;
+        --text-light: #718096;
+        --border-color: #e2e8f0;
+        --bg-light: #f7fafc;
+        --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        line-height: 1.6;
+        color: var(--text-dark);
+    }
+
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+        background: var(--bg-light);
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .breadcrumb-list {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        list-style: none;
+        font-size: 0.875rem;
+    }
+
+    .breadcrumb-item {
+        color: var(--text-light);
+    }
+
+    .breadcrumb-item a {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: color 0.3s ease;
+    }
+
+    .breadcrumb-item a:hover {
+        color: var(--accent-color);
+    }
+
+    .breadcrumb-separator {
+        color: var(--text-light);
+    }
+
+    /* Product Detail Section */
+    .product-detail {
+        padding: 3rem 0;
+    }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        margin-bottom: 4rem;
+    }
+
+    /* Image Gallery */
+    .image-gallery {
+        position: relative;
+    }
+
+    .main-image {
+        width: 100%;
+        height: 500px;
+        object-fit: cover;
+        border-radius: 12px;
+        box-shadow: var(--shadow-lg);
+        transition: transform 0.3s ease;
+    }
+
+    .main-image:hover {
+        transform: scale(1.02);
+    }
+
+    .thumbnail-gallery {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+        overflow-x: auto;
+        padding: 0.5rem 0;
+    }
+
+    .thumbnail {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .thumbnail:hover,
+    .thumbnail.active {
+        border-color: var(--accent-color);
+        transform: scale(1.05);
+    }
+
+    .zoom-icon {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+    }
+
+    .zoom-icon:hover {
+        background: white;
+        transform: scale(1.1);
+    }
+
+    /* Product Info */
+    .product-info {
+        padding: 1rem 0;
+    }
+
+    .product-category {
+        color: var(--accent-color);
+        font-size: 0.875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+    }
+
+    .product-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+
+    .product-short-desc {
+        font-size: 1.125rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .product-price {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--success-color);
+        margin-bottom: 2rem;
+    }
+
+    /* Specifications */
+    .specifications {
+        background: white;
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: var(--shadow-sm);
+    }
+
+    .spec-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        color: var(--text-dark);
+        border-bottom: 2px solid var(--accent-color);
+        padding-bottom: 0.5rem;
+    }
+
+    .spec-grid {
+        display: grid;
+        gap: 1rem;
+    }
+
+    .spec-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .spec-item:last-child {
+        border-bottom: none;
+    }
+
+    .spec-label {
+        font-weight: 500;
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .spec-value {
+        color: var(--text-light);
+        font-weight: 400;
+        text-align: right;
+    }
+
+    .spec-icon {
+        width: 16px;
+        height: 16px;
+        color: var(--accent-color);
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .btn {
+        padding: 0.875rem 2rem;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        font-size: 1rem;
+        text-align: center;
+        justify-content: center;
+        min-width: 150px;
+    }
+
+    .btn-primary {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+    .btn-outline {
+        background: transparent;
+        color: var(--primary-color);
+        border: 2px solid var(--primary-color);
+    }
+
+    .btn-outline:hover {
+        background: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    /* Material Badge */
+    .material-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    /* Product Description */
+    .product-description {
+        margin: 4rem 0;
+    }
+
+    .description-tabs {
+        display: flex;
+        border-bottom: 2px solid var(--border-color);
+        margin-bottom: 2rem;
+        overflow-x: auto;
+    }
+
+    .tab-button {
+        background: none;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--text-light);
+        cursor: pointer;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .tab-button.active {
+        color: var(--accent-color);
+        border-bottom-color: var(--accent-color);
+    }
+
+    .tab-content {
+        display: none;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+
+    .tab-content p {
+        margin-bottom: 1rem;
+        line-height: 1.8;
+        color: var(--text-dark);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Related Products */
+    .related-products {
+        margin: 4rem 0;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+    }
+
+    .product-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border-color);
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .product-card-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .product-card-content {
+        padding: 1.5rem;
+    }
+
+    .product-card-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+        line-height: 1.4;
+    }
+
+    .product-card-desc {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+    }
+
+    .product-card-footer {
+        display: flex;
+        justify-content: between;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .product-card-material {
+        background: var(--bg-light);
+        color: var(--text-dark);
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+
+    /* Modal for Image Zoom */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.9);
+        animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 2rem;
+    }
+
+    .modal-image {
+        max-width: 90%;
+        max-height: 90%;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    .modal-close {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        font-size: 2rem;
+        cursor: pointer;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.3s ease;
+    }
+
+    .modal-close:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+        .container {
+            padding: 0 15px;
+        }
+        
+        .product-grid {
+            gap: 2rem;
+        }
+        
+        .product-title {
+            font-size: 2rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .product-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .main-image {
+            height: 400px;
+        }
+        
+        .product-title {
+            font-size: 1.75rem;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+        }
+        
+        .description-tabs {
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .products-grid {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .product-detail {
+            padding: 2rem 0;
+        }
+        
+        .specifications {
+            padding: 1.5rem;
+        }
+        
+        .main-image {
+            height: 300px;
+        }
+        
+        .product-title {
+            font-size: 1.5rem;
+        }
+        
+        .modal-content {
+            padding: 1rem;
+        }
+        
+        .modal-close {
+            top: 1rem;
+            right: 1rem;
+            width: 40px;
+            height: 40px;
+            font-size: 1.5rem;
+        }
+    }
+
+    /* Loading Animation */
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    /* Utility Classes */
+    .text-center { text-align: center; }
+    .mb-2 { margin-bottom: 0.5rem; }
+    .mb-4 { margin-bottom: 1rem; }
+    .mt-4 { margin-top: 1rem; }
+    .hidden { display: none; }
+</style>
+
+
+
+<!-- Breadcrumb -->
+<nav class="breadcrumb">
+    <div class="container">
+        <ol class="breadcrumb-list">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Home</a></li>
+            <li class="breadcrumb-separator">/</li>
+            <li class="breadcrumb-item"><a href="{% url 'products' %}">Products</a></li>
+            <li class="breadcrumb-separator">/</li>
+            <li class="breadcrumb-item"><a href="{% url 'products' %}?category={{ product.category.slug }}">{{ product.category.name }}</a></li>
+            <li class="breadcrumb-separator">/</li>
+            <li class="breadcrumb-item">{{ product.name }}</li>
+        </ol>
+    </div>
+</nav>
+
+<!-- Product Detail -->
+<section class="product-detail">
+    <div class="container">
+        <div class="product-grid">
+            <!-- Image Gallery -->
+            <div class="image-gallery">
+                <div class="main-image-container" style="position: relative;">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="main-image" id="mainImage">
+                    <button class="zoom-icon" onclick="openModal('{{ product.image.url }}')">
+                        <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="thumbnail-gallery">
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="thumbnail active" onclick="changeMainImage('{{ product.image.url }}', this)">
+                    {% if product.gallery_image_1 %}
+                        <img src="{{ product.gallery_image_1.url }}" alt="{{ product.name }}" class="thumbnail" onclick="changeMainImage('{{ product.gallery_image_1.url }}', this)">
+                    {% endif %}
+                    {% if product.gallery_image_2 %}
+                        <img src="{{ product.gallery_image_2.url }}" alt="{{ product.name }}" class="thumbnail" onclick="changeMainImage('{{ product.gallery_image_2.url }}', this)">
+                    {% endif %}
+                    {% if product.gallery_image_3 %}
+                        <img src="{{ product.gallery_image_3.url }}" alt="{{ product.name }}" class="thumbnail" onclick="changeMainImage('{{ product.gallery_image_3.url }}', this)">
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Product Info -->
+            <div class="product-info">
+                <div class="product-category">{{ product.category.name }}</div>
+                <h1 class="product-title">{{ product.name }}</h1>
+                
+                <div class="material-badge">
+                    <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ product.get_material_display }}
+                </div>
+                
+                {% if product.short_description %}
+                    <p class="product-short-desc">{{ product.short_description }}</p>
+                {% endif %}
+
+                {% if product.price %}
+                    <div class="product-price">₹{{ product.price }}</div>
+                {% endif %}
+
+                <!-- Specifications -->
+                <div class="specifications">
+                    <h3 class="spec-title">Specifications</h3>
+                    <div class="spec-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">
+                                <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                                </svg>
+                                Material
+                            </span>
+                            <span class="spec-value">{{ product.get_material_display }}</span>
+                        </div>
+                        
+                        {% if product.size_range %}
+                        <div class="spec-item">
+                            <span class="spec-label">
+                                <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                                </svg>
+                                Size Range
+                            </span>
+                            <span class="spec-value">{{ product.size_range }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if product.pressure_rating %}
+                        <div class="spec-item">
+                            <span class="spec-label">
+                                <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                                </svg>
+                                Pressure Rating
+                            </span>
+                            <span class="spec-value">{{ product.pressure_rating }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if product.temperature_range %}
+                        <div class="spec-item">
+                            <span class="spec-label">
+                                <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                                Temperature Range
+                            </span>
+                            <span class="spec-value">{{ product.temperature_range }}</span>
+                        </div>
+                        {% endif %}
+                        
+                        {% if product.standards %}
+                        <div class="spec-item">
+                            <span class="spec-label">
+                                <svg class="spec-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Standards
+                            </span>
+                            <span class="spec-value">{{ product.standards }}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="{% url 'contact' %}" class="btn btn-primary">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        Get Quote
+                    </a>
+                    <button class="btn btn-outline" onclick="shareProduct()">
+                        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+                        </svg>
+                        Share
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Description Tabs -->
+        <div class="product-description">
+            <div class="description-tabs">
+                <button class="tab-button active" onclick="openTab(event, 'description')">Description</button>
+                <button class="tab-button" onclick="openTab(event, 'applications')">Applications</button>
+                <button class="tab-button" onclick="openTab(event, 'features')">Features</button>
+            </div>
+            
+            <div id="description" class="tab-content active">
+                <div style="max-width: 800px;">
+                    {{ product.description|linebreaks }}
+                </div>
+            </div>
+            
+            <div id="applications" class="tab-content">
+                <div style="max-width: 800px;">
+                    <p>{{ product.get_material_display }} products are widely used in various industrial applications due to their excellent corrosion resistance and durability.</p>
+                    <p><strong>Common Applications:</strong></p>
+                    <ul style="margin-left: 2rem; line-height: 1.8;">
+                        <li>Chemical and petrochemical industries</li>
+                        <li>Food and beverage processing</li>
+                        <li>Marine and offshore applications</li>
+                        <li>Pharmaceutical manufacturing</li>
+                        <li>Power generation facilities</li>
+                        <li>Oil and gas refineries</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div id="features" class="tab-content">
+                <div style="max-width: 800px;">
+                    <p><strong>Key Features of {{ product.get_material_display }}:</strong></p>
+                    <ul style="margin-left: 2rem; line-height: 1.8;">
+                        <li>Superior corrosion resistance</li>
+                        <li>High temperature performance</li>
+                        <li>Excellent mechanical properties</li>
+                        <li>Easy to clean and maintain</li>
+                        <li>FDA approved for food contact</li>
+                        <li>Fully recyclable material</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products -->
+{% if related_products %}
+<section class="related-products">
+    <div class="container">
+        <h2 class="section-title">Related Products</h2>
+        <div class="products-grid">
+            {% for related_product in related_products %}
+            <div class="product-card">
+                <img src="{{ related_product.image.url }}" alt="{{ related_product.name }}" class="product-card-image">
+                <div class="product-card-content">
+                    <h3 class="product-card-title">{{ related_product.name }}</h3>
+                    <p class="product-card-desc">{{ related_product.short_description|truncatechars:100 }}</p>
+                    <div class="product-card-footer">
+                        <span class="product-card-material">{{ related_product.get_material_display }}</span>
+                        <a href="{{ related_product.get_absolute_url }}" class="btn btn-outline" style="padding: 0.5rem 1rem; font-size: 0.875rem; min-width: auto;">View Details</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Image Modal -->
+<div id="imageModal" class="modal">
+    <div class="modal-content">
+        <button class="modal-close" onclick="closeModal()">&times;</button>
+        <img id="modalImage" class="modal-image" alt="">
+    </div>
+</div>
+
+
+
+<script>
+    // Image gallery functionality
+    function changeMainImage(imageSrc, thumbnail) {
+        const mainImage = document.getElementById('mainImage');
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        
+        // Add loading effect
+        mainImage.style.opacity = '0.7';
+        
+        setTimeout(() => {
+            mainImage.src = imageSrc;
+            mainImage.style.opacity = '1';
+        }, 100);
+        
+        // Update active thumbnail
+        thumbnails.forEach(thumb => thumb.classList.remove('active'));
+        thumbnail.classList.add('active');
+    }
+
+    // Modal functionality
+    function openModal(imageSrc) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        
+        modalImage.src = imageSrc;
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+        
+        // Add click outside to close
+        modal.onclick = function(event) {
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('imageModal');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Tab functionality
+    function openTab(evt, tabName) {
+        const tabContents = document.querySelectorAll('.tab-content');
+        const tabButtons = document.querySelectorAll('.tab-button');
+        
+        // Hide all tab contents
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // Remove active class from all buttons
+        tabButtons.forEach(button => button.classList.remove('active'));
+        
+        // Show selected tab and mark button as active
+        document.getElementById(tabName).classList.add('active');
+        evt.currentTarget.classList.add('active');
+    }
+
+    // Share functionality
+    async function shareProduct() {
+        const shareData = {
+            title: '{{ product.name }} - {{ company_info.company_name }}',
+            text: '{{ product.short_description|truncatechars:100 }}',
+            url: window.location.href
+        };
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData);
+            } else {
+                // Fallback: copy to clipboard
+                await navigator.clipboard.writeText(window.location.href);
+                showNotification('Product link copied to clipboard!', 'success');
+            }
+        } catch (err) {
+            console.log('Error sharing:', err);
+            // Fallback: copy to clipboard
+            try {
+                await navigator.clipboard.writeText(window.location.href);
+                showNotification('Product link copied to clipboard!', 'success');
+            } catch (clipboardErr) {
+                showNotification('Unable to share. Please copy the URL manually.', 'error');
+            }
+        }
+    }
+
+    // Notification system
+    function showNotification(message, type = 'info') {
+        // Remove any existing notifications
+        const existingNotification = document.querySelector('.notification');
+        if (existingNotification) {
+            existingNotification.remove();
+        }
+
+        // Create notification element
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? 'var(--success-color)' : type === 'error' ? 'var(--error-color)' : 'var(--primary-color)'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: var(--shadow-lg);
+            z-index: 1001;
+            animation: slideInRight 0.3s ease;
+            max-width: 300px;
+            font-weight: 500;
+        `;
+        
+        notification.textContent = message;
+        document.body.appendChild(notification);
+
+        // Auto remove after 3 seconds
+        setTimeout(() => {
+            notification.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 300);
+        }, 3000);
+    }
+
+    // Add CSS animations for notifications
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Smooth scrolling for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+
+    // Keyboard navigation for modal
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape') {
+            closeModal();
+        }
+    });
+
+    // Lazy loading for images
+    function lazyLoadImages() {
+        const images = document.querySelectorAll('img[data-src]');
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    img.src = img.dataset.src;
+                    img.classList.remove('lazy');
+                    imageObserver.unobserve(img);
+                }
+            });
+        });
+
+        images.forEach(img => imageObserver.observe(img));
+    }
+
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize lazy loading if needed
+        lazyLoadImages();
+        
+        // Add hover effects to product cards
+        const productCards = document.querySelectorAll('.product-card');
+        productCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-4px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Add click tracking for analytics (if needed)
+        const trackableElements = document.querySelectorAll('[data-track]');
+        trackableElements.forEach(element => {
+            element.addEventListener('click', function() {
+                const action = this.dataset.track;
+                // Add your analytics tracking code here
+                console.log('Tracking action:', action);
+            });
+        });
+
+        // Add smooth reveal animation for elements
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe elements for animation
+        const animatedElements = document.querySelectorAll('.product-card, .specifications, .tab-content');
+        animatedElements.forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    });
+
+    // Handle form submissions with loading states
+    function handleFormSubmission(form, button) {
+        const originalText = button.innerHTML;
+        button.innerHTML = '<span class="loading"></span> Processing...';
+        button.disabled = true;
+        
+        // Simulate form processing (replace with actual form handling)
+        setTimeout(() => {
+            button.innerHTML = originalText;
+            button.disabled = false;
+            showNotification('Form submitted successfully!', 'success');
+        }, 2000);
+    }
+
+    // Add to cart functionality (if needed)
+    function addToCart(productId) {
+        const button = event.target;
+        const originalText = button.innerHTML;
+        
+        button.innerHTML = '<span class="loading"></span> Adding...';
+        button.disabled = true;
+        
+        // Simulate API call
+        setTimeout(() => {
+            button.innerHTML = 'Added to Cart!';
+            button.style.background = 'var(--success-color)';
+            
+            setTimeout(() => {
+                button.innerHTML = originalText;
+                button.style.background = '';
+                button.disabled = false;
+            }, 2000);
+            
+            showNotification('Product added to cart!', 'success');
+        }, 1000);
+    }
+
+    // Handle window resize for responsive adjustments
+    let resizeTimer;
+    window.addEventListener('resize', function() {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function() {
+            // Adjust gallery layout if needed
+            const gallery = document.querySelector('.thumbnail-gallery');
+            if (gallery && window.innerWidth < 768) {
+                gallery.style.justifyContent = 'flex-start';
+            } else if (gallery) {
+                gallery.style.justifyContent = '';
+            }
+        }, 250);
+    });
+
+    // Preload images for better performance
+    function preloadImages() {
+        const imageUrls = [
+            {% if product.gallery_image_1 %}'{{ product.gallery_image_1.url }}',{% endif %}
+            {% if product.gallery_image_2 %}'{{ product.gallery_image_2.url }}',{% endif %}
+            {% if product.gallery_image_3 %}'{{ product.gallery_image_3.url }}',{% endif %}
+        ];
+        
+        imageUrls.forEach(url => {
+            if (url) {
+                const img = new Image();
+                img.src = url;
+            }
+        });
+    }
+
+    // Initialize preloading
+    preloadImages();
+
+    // Add error handling for images
+    document.querySelectorAll('img').forEach(img => {
+        img.addEventListener('error', function() {
+            this.src = '/static/images/placeholder.jpg'; // Add your placeholder image path
+            this.alt = 'Image not available';
+        });
+    });
+
+    // SEO-friendly image alt text updates
+    function updateImageAltText() {
+        const productName = '{{ product.name }}';
+        const mainImage = document.getElementById('mainImage');
+        const thumbnails = document.querySelectorAll('.thumbnail');
+        
+        if (mainImage) {
+            mainImage.alt = `${productName} - Main Product Image`;
+        }
+        
+        thumbnails.forEach((thumb, index) => {
+            thumb.alt = `${productName} - Gallery Image ${index + 1}`;
+        });
+    }
+
+    // Initialize alt text updates
+    updateImageAltText();
+</script>
+{% endblock %}

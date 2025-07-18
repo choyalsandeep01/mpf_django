@@ -1,0 +1,294 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}Premium Stainless Steel Products | SS Pipes, Flanges, Valves & Fittings Manufacturer{% endblock %}
+
+{% block meta_description %}Leading manufacturer & supplier of high-quality stainless steel products including SS pipes, flanges, valves, fittings, tubes, sheets & industrial components. ISO certified with 15+ years experience.{% endblock %}
+
+{% block meta_keywords %}stainless steel products, ss pipes, stainless steel flanges, ss valves, stainless steel fittings, ss tubes, stainless steel sheets, industrial valves, pipe fittings, stainless steel manufacturer, ss supplier, industrial components{% endblock %}
+
+{% block content %}
+<style>
+    .hero-buttons{
+        margin-bottom: 10px;
+    }
+    .btn-outline-light{
+        margin-top:10px;
+    }
+    .keyword-rich-content {
+        color: #6c757d;
+        font-size: 0.95rem;
+        line-height: 1.6;
+    }
+    .hero-title{
+        font-size: 1.5rem;
+    }
+    .keyword-rich-content2{
+        color: #ffffff;
+    }
+    /* Remove conflicting mobile styles */
+    @media (max-width: 767.98px) {
+        .hero-title{
+            font-size: 1.3rem;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <div class="hero-content" data-aos="fade-up">
+                    <h1 class="hero-title">Premium Stainless Steel Products -SS Elbow, Valves, Flanges & Pipes Manufacturer</h1>
+                    <div class="keyword-rich-content keyword-rich-content2  mb-3">
+                        <strong>Specializing in:</strong> SS 304, SS 316, SS 321, SS 410 pipes | Stainless steel flanges | Industrial valves | Pipe fittings | SS tubes & sheets
+                    </div>
+                    <div class="hero-buttons">
+                        <a href="{% url 'products' %}" class="btn btn-primary btn-lg me-3">View SS Products</a>
+                        <a href="{% url 'contact' %}" class="btn btn-outline-light btn-lg">Get Quote</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6" data-aos="fade-left">
+                <img src="/media/4.webp" 
+                     alt="Stainless Steel Products - SS Pipes, Flanges, Valves Manufacturing" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item" data-aos="fade-up">
+                    <div class="stat-number">500+</div>
+                    <div class="stat-label">Happy Clients Worldwide</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="100">
+                    <div class="stat-number">1000+</div>
+                    <div class="stat-label">SS Products Range</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="200">
+                    <div class="stat-number">15+</div>
+                    <div class="stat-label">Years in SS Manufacturing</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-item" data-aos="fade-up" data-aos-delay="300">
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">Quality Assured Products</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEO Content Section -->
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12" data-aos="fade-up">
+                <div class="keyword-rich-content text-center">
+                    <p><strong>Comprehensive Stainless Steel Solutions:</strong> From SS seamless pipes to welded pipes, ASTM A312 pipes, stainless steel flanges (ANSI, DIN, JIS), ball valves, gate valves, check valves, butterfly valves, pipe fittings (elbows, tees, reducers), SS tubes, coils, sheets, plates, and custom industrial components.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Our Stainless Steel Product Categories</h2>
+        <div class="row">
+            {% for category in categories %}
+            <div class="col-lg-4 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|mul:100 }}">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-cog"></i>
+                    </div>
+                    <h4>{{ category.name }}</h4>
+                    <p>{{ category.description|truncatewords:15 }}</p>
+                    <a href="{% url 'products' %}?category={{ category.slug }}" class="btn btn-outline-primary">View SS Products</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Featured Stainless Steel Products</h2>
+        <div class="row">
+            {% for product in featured_products %}
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="{{ forloop.counter|mul:100 }}">
+                <div class="product-card">
+                    <div class="product-image">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }} - Stainless Steel Product">
+                        {% else %}
+                            <img src="https://via.placeholder.com/300x200/f8f9fa/667eea?text={{ product.name }}" alt="{{ product.name }} - SS Product">
+                        {% endif %}
+                    </div>
+                    <div class="p-3">
+                        <h5 class="mb-2">{{ product.name }}</h5>
+                        <p class="text-muted small">{{ product.short_description|truncatewords:10 }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary">{{ product.material }}</span>
+                            <a href="{{ product.get_absolute_url }}" class="btn btn-sm btn-outline-primary">View Details</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'products' %}" class="btn btn-primary btn-lg">View All SS Products</a>
+        </div>
+    </div>
+</section>
+
+
+<!-- Material Grades Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Available Stainless Steel Grades</h2>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up">
+                <div class="text-center p-4 border rounded">
+                    <h4 class="text-primary">SS 304</h4>
+                    <p class="mb-0">Most common austenitic grade for general applications</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="100">
+                <div class="text-center p-4 border rounded">
+                    <h4 class="text-primary">SS 316</h4>
+                    <p class="mb-0">Enhanced corrosion resistance with molybdenum</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="200">
+                <div class="text-center p-4 border rounded">
+                    <h4 class="text-primary">SS 321</h4>
+                    <p class="mb-0">Titanium stabilized for high temperature applications</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4" data-aos="fade-up" data-aos-delay="300">
+                <div class="text-center p-4 border rounded">
+                    <h4 class="text-primary">SS 410</h4>
+                    <p class="mb-0">Martensitic grade with good hardness properties</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+
+
+<!-- Applications Section -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Industries We Serve</h2>
+        <div class="row">
+            <div class="col-lg-4 col-md-6 mb-3" data-aos="fade-up">
+                <div class="d-flex align-items-center p-3 border rounded">
+                    <i class="fas fa-industry text-primary me-3"></i>
+                    <div>
+                        <h6 class="mb-1">Oil & Gas</h6>
+                        <small class="text-muted">Petrochemical processing equipment</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3" data-aos="fade-up" data-aos-delay="100">
+                <div class="d-flex align-items-center p-3 border rounded">
+                    <i class="fas fa-flask text-primary me-3"></i>
+                    <div>
+                        <h6 class="mb-1">Chemical Processing</h6>
+                        <small class="text-muted">Corrosion resistant components</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3" data-aos="fade-up" data-aos-delay="200">
+                <div class="d-flex align-items-center p-3 border rounded">
+                    <i class="fas fa-utensils text-primary me-3"></i>
+                    <div>
+                        <h6 class="mb-1">Food & Beverage</h6>
+                        <small class="text-muted">Hygienic SS equipment</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3" data-aos="fade-up" data-aos-delay="300">
+                <div class="d-flex align-items-center p-3 border rounded">
+                    <i class="fas fa-pills text-primary me-3"></i>
+                    <div>
+                        <h6 class="mb-1">Pharmaceutical</h6>
+                        <small class="text-muted">High purity SS components</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3" data-aos="fade-up" data-aos-delay="400">
+                <div class="d-flex align-items-center p-3 border rounded">
+                    <i class="fas fa-ship text-primary me-3"></i>
+                    <div>
+                        <h6 class="mb-1">Marine</h6>
+                        <small class="text-muted">Saltwater resistant products</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 mb-3" data-aos="fade-up" data-aos-delay="500">
+                <div class="d-flex align-items-center p-3 border rounded">
+                    <i class="fas fa-building text-primary me-3"></i>
+                    <div>
+                        <h6 class="mb-1">Construction</h6>
+                        <small class="text-muted">Structural SS components</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="py-5 bg-primary text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8" data-aos="fade-right">
+                <h3 class="mb-2">Stay Updated with Latest Stainless Steel Products & Industry News</h3>
+                <p class="mb-0">Subscribe to our newsletter for SS product updates, price lists, and industry insights.</p>
+            </div>
+            <div class="col-lg-4" data-aos="fade-left">
+                <form id="newsletter-form" method="post" action="{% url 'newsletter_signup' %}">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+                        <button class="btn btn-light" type="submit">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEO Footer Content -->
+<section class="py-4 bg-dark text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="text-center">
+                    <p class="mb-2"><strong>Keywords:</strong> Stainless Steel Products, SS Pipes, SS Flanges, SS Valves, Stainless Steel Fittings, SS Tubes, SS Sheets, Industrial Valves, Pipe Fittings, SS 304, SS 316, SS 321, SS 410</p>
+                    <p class="mb-0 small text-muted">Leading manufacturer and supplier of premium stainless steel products including seamless pipes, welded pipes, flanges, valves, fittings, tubes, sheets, and industrial components across various grades and specifications.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
