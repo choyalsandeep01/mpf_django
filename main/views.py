@@ -147,3 +147,17 @@ def newsletter_signup(request):
             messages.error(request, 'Please enter a valid email address.')
     
     return redirect('home')
+
+from django.contrib.auth.models import User
+from django.http import HttpResponse
+
+def create_superuser_temp(request):
+    if User.objects.filter(username="admin").exists():
+        return HttpResponse("Superuser already exists.")
+
+    User.objects.create_superuser(
+        username="mpf_admin",
+        email="admin@example.com",
+        password="admin9672"
+    )
+    return HttpResponse("Superuser created successfully.")
