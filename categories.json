@@ -1,0 +1,123 @@
+[
+    {
+      "model": "main.category",
+      "pk": 1,
+      "fields": {
+        "name": "Stainless Steel Pipes & Tubes",
+        "slug": "stainless-steel-pipes-and-tubes",
+        "description": "Various types of seamless, welded, ERW, and specialized stainless steel tubes.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-21T06:05:53.645238Z"
+      }
+    },
+    {
+      "model": "main.category",
+      "pk": 2,
+      "fields": {
+        "name": "Stainless Steel Pipe Fittings",
+        "slug": "stainless-steel-pipe-fittings",
+        "description": "Elbows, tees, reducers, nipples, and other stainless steel fittings.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-20T06:05:53.645238Z"
+      }
+    },
+    {
+      "model": "main.category",
+      "pk": 3,
+      "fields": {
+        "name": "Stainless Steel Flanges",
+        "slug": "stainless-steel-flanges",
+        "description": "Slip-on, weld neck, blind, and specialty flanges for stainless steel piping.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-21T06:05:53.645238Z"
+      }
+    },
+    {
+      "model": "main.category",
+      "pk": 4,
+      "fields": {
+        "name": "Stainless Steel Sheets, Plates & Coils",
+        "slug": "stainless-steel-sheets-plates-and-coils",
+        "description": "Sheets, plates, coils, chequered and perforated materials for fabrication.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-21T06:05:53.645238Z"
+      }
+    },
+    {
+      "model": "main.category",
+      "pk": 5,
+      "fields": {
+        "name": "Stainless Steel Rods, Bars & Wires",
+        "slug": "stainless-steel-rods-bars-and-wires",
+        "description": "Round bars, hex bars, threaded rods, and stainless steel wires.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-21T06:05:53.645238Z"
+      }
+    },
+    {
+      "model": "main.category",
+      "pk": 6,
+      "fields": {
+        "name": "Stainless Steel Fasteners",
+        "slug": "stainless-steel-fasteners",
+        "description": "Bolts, nuts, washers, screws, and anchor fasteners made from stainless steel.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-21T06:05:53.645238Z"
+      }
+    },
+    {
+      "model": "main.category",
+      "pk": 7,
+      "fields": {
+        "name": "Stainless Steel Valves",
+        "slug": "stainless-steel-valves",
+        "description": "Ball valves, gate valves, globe valves, and check valves in stainless steel.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-21T06:05:53.645238Z"
+      }
+    },
+    {
+      "model": "main.category",
+      "pk": 8,
+      "fields": {
+        "name": "Stainless Steel Clamps & Supports",
+        "slug": "stainless-steel-clamps-and-supports",
+        "description": "U-clamps, saddle clamps, hangers, brackets, and support systems.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-21T06:05:53.645238Z"
+      }
+    },
+    {
+      "model": "main.category",
+      "pk": 9,
+      "fields": {
+        "name": "Stainless Steel Fabrication Components",
+        "slug": "stainless-steel-fabrication-components",
+        "description": "Manifolds, tanks, trays, enclosures, and custom stainless steel components.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-21T06:05:53.645238Z"
+      }
+    },
+    {
+      "model": "main.category",
+      "pk": 10,
+      "fields": {
+        "name": "Specialty Products",
+        "slug": "specialty-products",
+        "description": "Sanitary fittings, hose couplings, ferrules, gaskets, and pharmaceutical components.",
+        "image": null,
+        "is_active": true,
+        "created_at": "2025-07-21T06:05:53.645238Z"
+      }
+    }
+  ]
+  

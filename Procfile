@@ -1,0 +1,1 @@
+web: gunicorn mpf_project.wsgi
