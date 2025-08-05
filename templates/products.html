@@ -550,13 +550,7 @@
                                     {% endif %}
                                 </div>
                                 <div class="product-footer">
-                                    <div class="product-price">
-                                        {% if product.price %}
-                                            ₹{{ product.price }}
-                                        {% else %}
-                                            Quote on Request
-                                        {% endif %}
-                                    </div>
+                                   
                                     <a href="{{ product.get_absolute_url }}" class="view-btn">View Details</a>
                                 </div>
                             </div>
